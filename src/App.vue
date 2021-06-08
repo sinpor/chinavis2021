@@ -1,7 +1,7 @@
 <template>
 	<a-layout id="components-layout-demo-top" class="layout">
 		<a-layout-header>
-			<div class="logo" />
+			<div class="logo" >xxxx</div>
 			<a-menu
 				theme="dark"
 				mode="horizontal"
@@ -11,9 +11,9 @@
 				<a-menu-item key="1">
 					<router-link to="/">页面1</router-link>
 				</a-menu-item>
-				<a-menu-item key="2">
-					<router-link to="/home">页面2</router-link>
-				</a-menu-item>
+				<!-- <a-menu-item key="2">
+					<router-link to="/page2">页面2</router-link>
+				</a-menu-item> -->
 				<a-menu-item key="3">
 					<router-link to="/page3">页面3</router-link>
 				</a-menu-item>
@@ -49,17 +49,20 @@ export default {
 	.logo {
 		width: 120px;
 		height: 31px;
-		background: rgba(255, 255, 255, 0.2);
+		line-height: 31px;
+		color: #fff;
+		font-size: 28px;
+		// background: rgba(255, 255, 255, 0.2);
 		margin: 16px 24px 16px 0;
 		float: left;
 	}
 	.ant-layout-content {
-		margin: 0 @content-margin;
+		// margin: 0 @content-margin;
 		.layout-content {
 			min-height: @content-height;
 			height: @content-height;
 			background: #fff;
-			padding: @content-padding;
+			// padding: @content-padding;
 		}
 	}
 }

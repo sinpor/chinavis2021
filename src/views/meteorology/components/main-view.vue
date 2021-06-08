@@ -12,12 +12,18 @@ import chinaJson from "@/assets/map/china-geo.json"
 // import mapStyle from "@/assets/map/mapStyle.json"
 import dayjs from "dayjs"
 import * as d3 from "d3"
+import moment from "moment"
 
 const options = {
 	legend: {
 		right: 20,
 		bottom: 20,
 		orient: "vertical",
+	},
+	brush: {
+		toolbox: ["rect", "clear"],
+		seriesIndex: 2,
+		z: 20000,
 	},
 	visualMap: [
 		{
@@ -69,8 +75,8 @@ const options = {
 				colorAlpha: [0.2, 0.9],
 			},
 			textStyle: {
-				color: '#aaa'
-			}
+				color: "#aaa",
+			},
 		},
 	],
 	// bmap: {
@@ -96,7 +102,7 @@ const options = {
 		// 是否开启resize
 		resizeEnable: true,
 		// 自定义地图样式主题
-		mapStyle: "amap://styles/dark",
+		mapStyle: "amap://styles/whitesmoke",
 		// 移动过程中实时渲染 默认为true 如数据量较大 建议置为false
 		renderOnMoving: true,
 		// 设置 ECharts 图层是否可交互 默认为 true
@@ -106,9 +112,8 @@ const options = {
 		// 是否启用大数据模式 默认为 false
 		// 此配置项从 v1.9.0 起开始支持
 		largeMode: true,
-		// 说明：如果想要添加卫星、路网等图层
-		// 暂时先不要使用layers配置，因为存在Bug
-		// 建议使用amap.add的方式，使用方式参见最下方代码
+		// 拖拽
+		dragEnable: true,
 	},
 	series: [
 		{
@@ -140,12 +145,11 @@ const options = {
 			id: "scatter",
 			type: "scatter",
 			coordinateSystem: "amap",
-			itemStyle: {
-				radius: 0,
-			},
+			symbolSize: 0,
 		},
 		{
 			id: "aqi",
+			name: "AQI",
 			type: "heatmap",
 			coordinateSystem: "amap",
 			pointSize: 5,
@@ -170,6 +174,24 @@ export default {
 		this.chart = echarts.init(this.$refs.container)
 		this.setOption(options)
 		await this.fetchData()
+		this.handleBrush()
+		this.setOption({
+			toolbox: {
+				feature: {
+					myTool1: {
+						title: "查看详情",
+						icon:
+							"path://M942.193778 486.200889C847.388444 286.520889 704.113778 185.998222 512 185.998222c-192.199111 0-335.388444 100.494222-430.193778 300.288a60.302222 60.302222 0 0 0 0 51.512889c94.805333 199.68 238.08 300.202667 430.193778 300.202667 192.199111 0 335.388444-100.494222 430.193778-300.288 7.68-16.213333 7.68-35.015111 0-51.512889zM512 766.008889c-161.28 0-279.409778-81.806222-362.695111-254.008889C232.590222 339.797333 350.691556 257.991111 512 257.991111c161.28 0 279.409778 81.806222 362.695111 254.008889-83.2 172.202667-201.301333 254.008889-362.695111 254.008889z m-3.982222-429.994667a176.014222 176.014222 0 1 0 0 352 176.014222 176.014222 0 0 0 0-352z m0 287.971556A111.957333 111.957333 0 0 1 395.975111 512a111.957333 111.957333 0 0 1 111.985778-112.014222A111.957333 111.957333 0 0 1 620.003556 512a111.957333 111.957333 0 0 1-112.014223 112.014222z",
+						onclick: () => {
+							const date = moment("20130101", "YYYYMMDD")
+								.add(this.dateCode, "d")
+								.format("YYYY/MM/DD")
+							this.$router.push({ name: 'Detail', params: { date, data: this.skipData }})
+						},
+					},
+				},
+			},
+		})
 	},
 	methods: {
 		initBus() {
@@ -177,10 +199,6 @@ export default {
 			this.$bus.$on("toolbox-slider", async (v) => {
 				this.dateCode = v
 				await this.fetchData()
-				// this.initFlow(this.originData)
-				// this.initTemperature(this.originData)
-				// this.initIsoline(this.originData)
-				// this.initAqi(this.originData)
 			})
 		},
 		offBus() {
@@ -198,6 +216,7 @@ export default {
 			this.initTemperature(res)
 			this.initIsoline(res)
 			this.initAqi(res)
+			this.initScatter(res)
 			return res
 		},
 		initFlow(data) {
@@ -332,9 +351,15 @@ export default {
 
 			console.log(contours)
 		},
-		// initScatter(data) {
-
-		// },
+		initScatter(data) {
+			const useData = data.map((d) => [d.lon, d.lat, d])
+			this.setOption({
+				series: {
+					id: "scatter",
+					data: useData,
+				},
+			})
+		},
 		initAqi(data) {
 			let max = 0
 			let min = Infinity
@@ -353,6 +378,36 @@ export default {
 					id: "aqi",
 					data: useData,
 				},
+			})
+		},
+		handleBrush() {
+			this.chart.on("globalcursortaken", (opt) => {
+				if (opt.brushOption.brushType) {
+					this.amap.setStatus({
+						dragEnable: false,
+					})
+				} else {
+					this.amap.setStatus({
+						dragEnable: true,
+					})
+				}
+			})
+			this.chart.on("brushselected", "series.scatter", (opt) => {
+				clearTimeout(this.selectTimer)
+				this.selectTimer = setTimeout(() => {
+					try {
+						const data = this.chart
+							.getOption()
+							.series.find((d) => d.id === "scatter").data
+						const dataIndexs = opt.batch[0].selected.find(
+							(d) => d.seriesId === "scatter"
+						).dataIndex
+						const useData = dataIndexs.map((i) => data[i].slice(0, 2))
+						this.skipData = useData
+					} catch (error) {
+						console.log(error)
+					}
+				}, 300)
 			})
 		},
 		setOption(options) {

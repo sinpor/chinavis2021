@@ -11,6 +11,7 @@
 <script>
 import { Slider, Select } from "ant-design-vue"
 import dayjs from "dayjs"
+import moment from 'moment'
 export default {
 	name: "tool-box",
 	components: {
@@ -25,9 +26,16 @@ export default {
 		}
 	},
 	mounted() {
-		this.$bus.$emit("toolbox-slider", this.yearCode * 365 + this.dateCode)
+		this.emit()
 	},
 	methods: {
+		emit() {
+			const isLeapYear = moment([2013 + this.yearCode]).isLeapYear()
+			this.$bus.$emit(
+				"toolbox-slider",
+				this.yearCode * (isLeapYear ? 366 : 365) + this.dateCode
+			)
+		},
 		getYear(code) {
 			return dayjs("2013", "YYYY")
 				.add(code, "y")
@@ -38,9 +46,11 @@ export default {
 				.add(v, "d")
 				.format("YYYY/MM/DD")
 		},
-		handleYearChange() {},
-		handleSliderChange(v) {
-			this.$bus.$emit("toolbox-slider", v)
+		handleYearChange() {
+			this.emit()
+		},
+		handleSliderChange() {
+			this.emit()
 		},
 	},
 }
@@ -52,7 +62,7 @@ export default {
 	right: 24px;
 	top: 24px;
 	z-index: 2;
-	opacity: 0.5;
+	opacity: 0.9;
 	display: flex;
 	align-items: center;
 }

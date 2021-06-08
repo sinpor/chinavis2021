@@ -10,6 +10,11 @@ const routes = [
     component: () => import('../views/meteorology')
   },
   {
+    path: '/page2',
+    name: 'Detail',
+    component: () => import('../views/page2')
+  },
+  {
     path: '/page3',
     name: 'Attribute',
     // route level code-splitting
