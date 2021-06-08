@@ -15,18 +15,12 @@
 					<router-link to="/home">页面2</router-link>
 				</a-menu-item>
 				<a-menu-item key="3">
-					<router-link to="/home">页面3</router-link>
+					<router-link to="/page3">页面3</router-link>
 				</a-menu-item>
 			</a-menu>
 		</a-layout-header>
-		<a-layout-content style="padding: 0 50px">
-			<div
-				:style="{
-					background: '#fff',
-					padding: '24px',
-					minHeight: '280px',
-				}"
-			>
+		<a-layout-content>
+			<div class="layout-content">
 				<router-view />
 			</div>
 		</a-layout-content>
@@ -47,12 +41,26 @@ export default {
 	},
 }
 </script>
-<style>
-#components-layout-demo-top .logo {
-	width: 120px;
-	height: 31px;
-	background: rgba(255, 255, 255, 0.2);
-	margin: 16px 24px 16px 0;
-	float: left;
+<style lang="less">
+@import url(./style/variable.less);
+@import url(./style/common.less);
+
+#components-layout-demo-top {
+	.logo {
+		width: 120px;
+		height: 31px;
+		background: rgba(255, 255, 255, 0.2);
+		margin: 16px 24px 16px 0;
+		float: left;
+	}
+	.ant-layout-content {
+		margin: 0 @content-margin;
+		.layout-content {
+			min-height: @content-height;
+			height: @content-height;
+			background: #fff;
+			padding: @content-padding;
+		}
+	}
 }
 </style>
