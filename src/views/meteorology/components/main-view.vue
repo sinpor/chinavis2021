@@ -11,7 +11,7 @@ import "echarts-extension-amap"
 import chinaJson from "@/assets/map/china-geo.json"
 // import mapStyle from "@/assets/map/mapStyle.json"
 import dayjs from "dayjs"
-import * as d3 from "d3"
+// import * as d3 from "d3"
 import moment from "moment"
 
 const options = {
@@ -214,7 +214,7 @@ export default {
 			this.initAmapControl()
 			this.initFlow(res)
 			this.initTemperature(res)
-			this.initIsoline(res)
+			// this.initIsoline(res)
 			this.initAqi(res)
 			this.initScatter(res)
 			return res
@@ -333,24 +333,24 @@ export default {
 			// 禁用 ECharts 图层交互，从而使高德地图图层可以点击交互
 			// amapComponent.setEChartsLayerInteractive(false)
 		},
-		initIsoline(data) {
-			const useData = data.map((d) => {
-				return {
-					...d,
-					// lnglat: [d.lon, d.lat].join(','),
-				}
-			})
+		// initIsoline(data) {
+			// const useData = data.map((d) => {
+			// 	return {
+			// 		...d,
+			// 		// lnglat: [d.lon, d.lat].join(','),
+			// 	}
+			// })
 			// .slice(0, 10)
-			console.log(d3)
-			const contour = d3
-				.contourDensity()
-				.x((d) => d.lon)
-				.y((d) => d.lat)
+			// console.log(d3)
+			// const contour = d3
+			// 	.contourDensity()
+			// 	.x((d) => d.lon)
+			// 	.y((d) => d.lat)
 
-			const contours = contour(useData)
+			// const contours = contour(useData)
 
-			console.log(contours)
-		},
+			// console.log(contours)
+		// },
 		initScatter(data) {
 			const useData = data.map((d) => [d.lon, d.lat, d])
 			this.setOption({
