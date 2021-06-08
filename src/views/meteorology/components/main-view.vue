@@ -54,7 +54,23 @@ const options = {
 		{
 			id: "temperature",
 			seriesIndex: 1,
-			show: false
+			show: false,
+		},
+		{
+			id: "aqi",
+			type: "piecewise",
+			bottom: 50,
+			left: 20,
+			splitNumber: 5,
+			seriesIndex: 3,
+			calculable: true,
+			inRange: {
+				color: ["purple"],
+				colorAlpha: [0.2, 0.9],
+			},
+			textStyle: {
+				color: '#aaa'
+			}
 		},
 	],
 	// bmap: {
@@ -120,6 +136,21 @@ const options = {
 			blurSize: 6,
 			z: 0,
 		},
+		{
+			id: "scatter",
+			type: "scatter",
+			coordinateSystem: "amap",
+			itemStyle: {
+				radius: 0,
+			},
+		},
+		{
+			id: "aqi",
+			type: "heatmap",
+			coordinateSystem: "amap",
+			pointSize: 5,
+			blurSize: 6,
+		},
 	],
 }
 
@@ -137,13 +168,8 @@ export default {
 		this.initBus()
 		echarts.registerMap("china", chinaJson)
 		this.chart = echarts.init(this.$refs.container)
-		const data = await this.fetchData()
-		this.originData = data
 		this.setOption(options)
-		this.initAmapControl()
-		this.initFlow(data)
-		this.initTemperature(data)
-		this.initIsoline(data)
+		await this.fetchData()
 	},
 	methods: {
 		initBus() {
@@ -151,23 +177,28 @@ export default {
 			this.$bus.$on("toolbox-slider", async (v) => {
 				this.dateCode = v
 				await this.fetchData()
-				this.initFlow(this.originData)
-				this.initTemperature(this.originData)
-				this.initIsoline(this.originData)
+				// this.initFlow(this.originData)
+				// this.initTemperature(this.originData)
+				// this.initIsoline(this.originData)
+				// this.initAqi(this.originData)
 			})
 		},
 		offBus() {
 			// this.$b
 		},
-		fetchData() {
+		async fetchData() {
 			const { dateCode } = this
 			const fileName = dayjs("20130101", "YYYYMMDD")
 				.add(dateCode, "d")
 				.format("YYYYMMDD")
-			return this.$http.get(`${fileName}00`).then((res) => {
-				console.log(res)
-				return res
-			})
+			const res = await this.$http.get(`${fileName}00`)
+			this.originData = res
+			this.initAmapControl()
+			this.initFlow(res)
+			this.initTemperature(res)
+			this.initIsoline(res)
+			this.initAqi(res)
+			return res
 		},
 		initFlow(data) {
 			let maxMag = 0
@@ -291,16 +322,38 @@ export default {
 				}
 			})
 			// .slice(0, 10)
-			console.log(d3);
+			console.log(d3)
 			const contour = d3
 				.contourDensity()
 				.x((d) => d.lon)
 				.y((d) => d.lat)
-				
 
 			const contours = contour(useData)
 
-				console.log(contours);
+			console.log(contours)
+		},
+		// initScatter(data) {
+
+		// },
+		initAqi(data) {
+			let max = 0
+			let min = Infinity
+			const useData = data.map((d) => {
+				max = Math.max(max, d.AQI)
+				min = Math.min(min, d.AQI)
+				return [d.lon, d.lat, d.AQI]
+			})
+			this.setOption({
+				visualMap: {
+					id: "aqi",
+					min,
+					max,
+				},
+				series: {
+					id: "aqi",
+					data: useData,
+				},
+			})
 		},
 		setOption(options) {
 			this.chart.setOption(options)
