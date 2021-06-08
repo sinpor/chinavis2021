@@ -178,7 +178,7 @@ export default {
 				const mag = Math.sqrt(u * u + v * v)
 				maxMag = Math.max(maxMag, mag)
 				minMag = Math.min(minMag, mag)
-				return [d.lon, d.lat, v, u, mag]
+				return [d.lon, d.lat, u, v, mag]
 			})
 			this.setOption({
 				visualMap: {
