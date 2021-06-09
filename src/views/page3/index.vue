@@ -1,21 +1,31 @@
 <template lang="en">
     <div class="page-container">
         <app-list :dataSource="dataSource"></app-list>
+        <app-map :dataSource="dataSource" ></app-map>
+        <app-attr :selectPrototypes="selectPrototypes" :selectData="selectData"></app-attr>
     </div>
 </template>
 <script>
 import appList from './components/list.vue'
+import appMap from './components/map.vue'
+import appAttr from './components/attr.vue'
 export default {
     components: {
-        'appList': appList
+        'appList': appList,
+        appMap,
+        appAttr
     },
     data() {
         return {
-            dataSource: []
+            dataSource: [],
+            selectPrototypes: [],
+            selectData: []
         }
     },
-    mounted() {
+    created() {
         this.initBus()
+    },
+    mounted() {
     },
     methods: {
         initBus() {
@@ -28,6 +38,15 @@ export default {
 				// this.initTemperature(this.originData)
 				// this.initIsoline(this.originData)
 			})
+
+            this.$bus.$on('selectPrototype', v => {
+                console.log(v);
+                this.selectPrototypes = v
+            })
+
+            this.$bus.$on('selectData', v => {
+                this.selectData = v
+            })
             
 		},
         async fetchData(date) {
@@ -40,5 +59,9 @@ export default {
 }
 </script>
 <style lang="less">
-    
+    .page-container {
+        height: 100%;
+        padding: 24px;
+        display: flex;
+    }
 </style>

@@ -46,6 +46,7 @@ export default {
 @import url(./style/common.less);
 
 #components-layout-demo-top {
+	min-width: 1280px;
 	.logo {
 		width: 320px;
 		height: 31px;

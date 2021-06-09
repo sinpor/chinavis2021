@@ -50,7 +50,10 @@ export default {
 			this.emit()
 		},
 		handleSliderChange() {
-			this.emit()
+			clearTimeout(this.sliderTimer)
+			this.sliderTimer = setTimeout(() => {
+				this.emit()
+			}, 300)
 		},
 	},
 }
