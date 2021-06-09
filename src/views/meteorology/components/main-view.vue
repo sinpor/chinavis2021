@@ -19,6 +19,16 @@ const options = {
 		right: 20,
 		bottom: 20,
 		orient: "vertical",
+		data: [{
+			name: '风场'
+		}, {
+			name: '温度'
+		}, {
+			name: 'AQI',
+			itemStyle: {
+				color: 'purple'
+			}
+		}]
 	},
 	brush: {
 		toolbox: ["rect", "clear"],
@@ -173,7 +183,6 @@ export default {
 		echarts.registerMap("china", chinaJson)
 		this.chart = echarts.init(this.$refs.container)
 		this.setOption(options)
-		await this.fetchData()
 		this.handleBrush()
 		this.setOption({
 			toolbox: {
@@ -192,6 +201,7 @@ export default {
 				},
 			},
 		})
+		await this.fetchData()
 	},
 	methods: {
 		initBus() {
