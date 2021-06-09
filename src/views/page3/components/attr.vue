@@ -125,8 +125,6 @@ export default {
 			}
 		}
 		.no-data {
-			position: relative;
-			top: 200px;
 			width: 100%;
 			height: 100%;
 			display: flex;
