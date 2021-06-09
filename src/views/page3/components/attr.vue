@@ -9,7 +9,7 @@
             <div v-if="!data.length" class="no-data">
                 <a-empty description="尚未采样数据！" />
             </div>
-            <div class="attr-chart" v-for="item of data" :class="{active: activeKey === item.name}" @click="handleAcive(item.name)">
+            <div class="attr-chart" v-for="item in data" :key="item.name" :class="{active: activeKey === item.name}" @click="handleAcive(item.name)">
             <app-line :dataSource="item.data" :name="item.name" ></app-line>
             </div>
         </div>
@@ -52,7 +52,7 @@ export default {
 					return { ...d, distance }
 				})
 				.sort((a, b) => a.distance - b.distance)
-            this.data = _.cloneDeep(useData)
+            this.data = useData
 		},
 	},
 	watch: {
@@ -89,6 +89,7 @@ export default {
 				.value()
 			this.data = useData
 			this.activeKey = this.data[0].name
+
 		},
 	},
 }
@@ -113,6 +114,7 @@ export default {
 	.body {
 		display: flex;
 		flex-wrap: wrap;
+        flex: 1;
 		.attr-chart {
 			border-radius: 10px;
 			border: solid 1px rgba(0, 0, 0, 0);
