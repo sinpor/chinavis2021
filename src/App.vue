@@ -1,7 +1,7 @@
 <template>
 	<a-layout id="components-layout-demo-top" class="layout">
 		<a-layout-header>
-			<div class="logo" >xxxx</div>
+			<div class="logo" >大气污染预测可视化分析</div>
 			<a-menu
 				theme="dark"
 				mode="horizontal"
@@ -9,13 +9,13 @@
 				:style="{ lineHeight: '64px' }"
 			>
 				<a-menu-item key="1">
-					<router-link to="/">页面1</router-link>
+					<router-link to="/">综合预测概览</router-link>
 				</a-menu-item>
-				<!-- <a-menu-item key="2">
-					<router-link to="/page2">页面2</router-link>
-				</a-menu-item> -->
+				<a-menu-item key="2">
+					<router-link to="#">污染物详情分析</router-link>
+				</a-menu-item>
 				<a-menu-item key="3">
-					<router-link to="/page3">页面3</router-link>
+					<router-link to="/page3">属性签名</router-link>
 				</a-menu-item>
 			</a-menu>
 		</a-layout-header>
@@ -47,7 +47,7 @@ export default {
 
 #components-layout-demo-top {
 	.logo {
-		width: 120px;
+		width: 320px;
 		height: 31px;
 		line-height: 31px;
 		color: #fff;
